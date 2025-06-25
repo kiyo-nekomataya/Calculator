@@ -76,7 +76,10 @@ var STATUS      = "stop"      ;
 var RATEs = ["100fps","24FPS","30NDF","30DF","25FPS"];
 var RATE	="24FPS";
 nas.FRATE.parse(RATE);
-var m_action    = true        ;//	マウスクリックでアクションするか
+var m_action      = true        ;//	マウスクリックでアクションするか
+var uiForm         = 'auto';//UIの方向 auto:自動追従 portrait:縦固定 landscape:横固定
+var pointerFocus  = null;
+var touchFocus    = null;
 //	ログ配列を初期化
 var Log = new Array();
 
@@ -176,13 +179,13 @@ var comBuf   = ''   ;//オペレータバッファ
 var maxPlace = 12   ;//電卓としての最大桁数?
 var bufPlace = 1    ;//現在の入力バッファ桁数・初期値0 なので 最少は1桁
 var bufDecimalPlace = 0     ;//入力バッファ小数部桁数
-var checkRegex = /[0-9\.]+/ ;//演算モード変数
+//var checkRegex = /[0-9\.]+/ ;//演算モード変数
+var checkRegex = /^[0-9]+$/  ;//10進演算モード
 var INPUTmode ='dec'        ;//bin,oct,dec,hex,frame,tc,sk,
 var TCf = 0         ;//TCフラグ TCモード時にバッファを10進に保留する際のフラグ
 var OPf = 0         ;//オペレーションフラグ 0:オペレータなし 1:オペレータあり 2:くり返しオペレータあり
 var prefix = ''     ;
 var cardinal = 10   ;
-var checkRegex = /^[0-9]$/  ;
 //chgINPUTmode('dec');
 /*
 	入力バッファの内容をスタックに反映させて表示を同期
@@ -983,6 +986,8 @@ ClockClicks = new Date();ct_K = ClockClicks.getTime();nas_capt = "Key";
 //putsCONS(nas_cc2FR(ct_K)+"_");
 	if ( KeyMODE == 'calculator' ){
 //電卓モード
+		var key = getKEYCODE(e);//キーコードを取得
+		focusKey(String.fromCharCode(key));
 		return true;
 	} else {
 //タイマーモード
@@ -1161,12 +1166,30 @@ function nas_write_Log(){
 
 
 function about_nas(){
-alert("Nekomataya Animation System \(Unsupported\) \n電卓+StopWatch "+ VER + "\n2008/11/28\n http://www.nekomataya.info/")
+alert("Nekomataya Animation System \(Unsupported\) \n電卓+StopWatch "+ VER + "\n2025/06/23\n http://www.nekomataya.info/")
 }
 /*
 電卓部分
 */
-
+/**
+	UIの方向を設定
+	auto | landscape | portrait
+	オートでは画面のサイズに従って自動選択
+	ランドスケープは横方向　ポートレートは縦方向で固定
+	それ以外の引数の場合は、順次スイッチ
+*/
+function setRotation(orientation){
+console.log(String(orientation))
+	if(!(String(orientation).match(/auto|portrait|landscape/i))){
+console.log('SWITCH')
+		orientation=['auto','portrait','landscape','auto'][['portrait','landscape','auto'].indexOf(uiForm)];//switch
+	}
+console.log(String(orientation))
+	uiForm = orientation.toLowerCase();
+	document.getElementById('PF1').value = uiForm;
+	nas_fitToWindow()
+	return uiForm;
+}
 /**
 	@params {String}	string
 	@params {String}	alignment
@@ -1174,7 +1197,7 @@ alert("Nekomataya Animation System \(Unsupported\) \n電卓+StopWatch "+ VER + "
 		
 		コンソール仕様変更
 コンソールにメッセージ表示　スタック型に新規ラインを上に積む
-コンソールは  左中右の３本のバッファを持ち切り替えが可能
+コンソールは  左中右(left,center,right)の３本のバッファを持ち切り替えが可能
 calcConsole.leftBuf|.centerBuf|.rightBuf
 引数に"(空文字列)"が指定された場合は現在のバッファをクリアする
 document.getElementById("consoleBox").style.textAlign
@@ -1246,11 +1269,11 @@ function chgINPUTmode(mode) {
 	INPUTmode=mode;
 
 switch (mode) {
-case "fct":	checkRegex =/^[0-9]$/;prefix = ''	;cardinal =10;TCf=1;break;
-case "bin":	checkRegex =/^[01]$/;prefix = ''	;cardinal =2;	break;
-case "oct":	checkRegex =/^[0-7]$/;prefix = '0'	;cardinal =8;	break;
-case "hex":	checkRegex =/^[0-9a-f]$/;prefix = '0x'	;cardinal =16;	break;
-default:	checkRegex =/^[0-9]$/;prefix = ''	;cardinal =10;	break;
+case "fct" :	checkRegex =/^[0-9]+$/    ;prefix = ''  ;cardinal =10 ;TCf=1;break;
+case "bin" :	checkRegex =/^[01]+$/     ;prefix = ''  ;cardinal =2  ;	break;
+case "oct" :	checkRegex =/^[0-7]+$/    ;prefix = '0' ;cardinal =8  ;	break;
+case "hex" :	checkRegex =/^[0-9a-f]+$/ ;prefix = '0x';cardinal =16 ;	break;
+default    :	checkRegex =/^[0-9]+$/    ;prefix = ''  ;cardinal =10 ;	break;
 }
 //ナンバボタン調整
 myButtonIdx=["2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
@@ -1389,6 +1412,10 @@ function editBuf(button){
 */
 var pushDouble=false;var previewButton="";
 
+function focusKey(button){
+	
+}
+
 function pushKey(button){
 pushDouble=(previewButton==button)?true:false;
 previewButton=button;
@@ -1399,8 +1426,37 @@ previewButton=button;
 		editBuf(button);
 	} else {
 		if (dEbug){putsCONS("push :"+button,'left');}
-		SW(button);
+//エイリアスを解決
+		SW(normalizeCommand(button));
 	}
+}
+/*
+	コマンドの異名を解決
+*/
+	const commandAliases = {
+		"mul":"*",
+		"×":"*",
+		"✕":"*",
+		"div":"/",
+		"pow":"^",
+		"minus":"-",
+		"−":"-",
+		"plus":"+",
+		"MR":"MEM",
+		"DUP":"dup",
+		"POP":"pop",
+		"EXC":"exc",
+		"RTR":"rtR",
+		"RTL":"rtL",
+		"±":"T",
+		"√":"R",
+		"π":"P",
+		"%":"MOD",
+		"":""
+	};
+function normalizeCommand(com){
+	if(commandAliases[com]) return commandAliases[com];
+	return com;
 }
 /*
 	保留オペレータの解決
@@ -1484,13 +1540,13 @@ switch (ComInput) {
 //case		"--":	//くり返し減算
 	
 // 二項演算子
-case		"*":	//乗算
-case		"/":	//実数商
-case		"Di":	//整数商
-case		"MOD":	//剰余
-case		"^":	//ベキ乗
-case		"-":	//減算
-case		"+":	//加算
+case		"*"  ://乗算
+case		"/"  ://実数商
+case		"Di" ://整数商
+case		"MOD"://剰余
+case		"^"  ://ベキ乗
+case		"-"  ://減算
+case		"+"  ://加算
 //以前の二項演算子を解決
 //	if (! comBuf=='') {SW("=");};
 	switch(OPf){
@@ -1523,13 +1579,13 @@ case		"+":	//加算
 	comBuf = ComInput;
 if (dEbug){putsCONS("change ComInput"+ComInput,'left')};
 	switch (ComInput) {
-	case	"*":	document.getElementById("COMbuf").innerHTML = "×";	TCf=0;break;
-	case	"/":	document.getElementById("COMbuf").innerHTML = "÷";	TCf=0;break;
-	case	"Di":	document.getElementById("COMbuf").innerHTML = "＼";	TCf=0;break;
-	case	"MOD":	document.getElementById("COMbuf").innerHTML = "％";	TCf=0;break;
-	case	"^":	document.getElementById("COMbuf").innerHTML = "pow";	TCf=0;break;
-	case	"-":	document.getElementById("COMbuf").innerHTML = "－";	TCf=1;break;
-	case	"+":	document.getElementById("COMbuf").innerHTML = "＋";	TCf=1;break;
+	case	"*"  : document.getElementById("COMbuf").innerHTML = "✕" ;	TCf=0;break;//乗算
+	case	"/"  : document.getElementById("COMbuf").innerHTML = "÷";	TCf=0;break;//実数商
+	case	"Di" : document.getElementById("COMbuf").innerHTML = "＼" ;	TCf=0;break;//整数商
+	case	"MOD": document.getElementById("COMbuf").innerHTML = "％" ;	TCf=0;break;//剰余
+	case	"^"  : document.getElementById("COMbuf").innerHTML = "pow";	TCf=0;break;//べき乗
+	case	"-"  : document.getElementById("COMbuf").innerHTML = "－";	TCf=1;break;//減算
+	case	"+"  : document.getElementById("COMbuf").innerHTML = "＋";	TCf=1;break;//加算
 //	case	"":	document.getElementById("COMbuf").innerHTML = "";	TCf=1;break;
 	default:;
 	}
@@ -1915,9 +1971,17 @@ baseFieldをスケーリングしてWindowにフィットさせる
 */
 
 function nas_fitToWindow(){
-var cOntent = document.getElementById('baseField');
-var sCale = (((window.innerWidth / window.innerHeight)/(cOntent.clientWidth / cOntent.clientHeight)) >= 1 )?
-	window.innerHeight / cOntent.clientHeight : window.innerWidth / cOntent.clientWidth ;
+	var cOntent = document.getElementById('baseField');
+	var winOrientation = ((window.innerWidth / window.innerHeight) >= 1)? 'landscape':'portrait';
+	//var sCale = 	window.innerWidth / cOntent.clientWidth ;//
+	if (uiForm == 'auto'){
+		document.getElementById('baseField').className = 'bf-' + winOrientation;
+	//	sCale = (winOrientation == 'portrait')? window.innerHeight / cOntent.clientHeight : window.innerWidth / cOntent.clientWidth ;//
+	} else {
+		document.getElementById('baseField').className = 'bf-'+ uiForm;
+//	sCale = (uiForm == 'portrait')? window.innerHeight / cOntent.clientHeight : window.innerWidth / cOntent.clientWidth ;//
+	};
+	var sCale = (((window.innerWidth / window.innerHeight)/(cOntent.clientWidth / cOntent.clientHeight)) >= 1 )? window.innerHeight / cOntent.clientHeight : window.innerWidth / cOntent.clientWidth;
 	document.getElementById('baseField').style.transform = "scale("+sCale+")";
 	return sCale;
 }
@@ -1960,16 +2024,74 @@ function handleTouchMove(evt){
 	ボタン類のイベントハンドル
 */
 function handlePointer(evt){
+	evt.stopImmediatePropagation();
+	evt.stopPropagation();
+	evt.preventDefault();
+	putsCONS(evt.type+' : '+evt.target.id);
+	evt.preventDefault();
+
 	switch(evt.type){
-	case 'pointerenter':;
-//		console.log(evt.target)
+	case 'pointerdown':
+		if(pointerFocus !== evt.target ){
+			pointerFocus = evt.target;
+putsCONS(pointerFocus.id);
+			pointerFocus.classList.remove('button-hover');
+			pointerFocus.classList.add('button-active');
+		};
+	break;
+	case 'pointermove':
+		if((pointerFocus)&&(pointerFocus !== evt.target )){
+			pointerFocus.classList.remove('button-active');
+			pointerFocus.classList.remove('button-hover');
+		};
+	break;
+	case 'pointerenter':
+	case 'pointerover':
 		this.classList.add('button-hover');
 	break;
 	case 'pointerleave':
 	case 'pointerout':
+		evt.target.classList.remove('button-active');
+		evt.target.classList.remove('button-hover');
+		if(pointerFocus){
+			pointerFocus = null;
+			putsCONS('NULL');
+		};
+	break;
+	case 'pointerancel':
+	case 'pointerup':
+		if(pointerFocus === evt.target ){
+			if(pointerFocus.onclick instanceof Function){
+				if(touchFocus === pointerFocus) pointerFocus.click();
+				pointerFocus.classList.remove('button-hover');
+				pointerFocus.classList.remove('button-active');
+				pointerFocus = null;
+			};
+		};
+		 this.classList.remove('button-active');
+	break;
 	default:
-		 this.classList.remove('button-hover');
+		 this.classList.remove('button-active');
 	}
+}
+/*
+	ボタン類のイベントハンドル
+pointerFocus	タッチベントを受けた要素参照ポイント
+タッチイベントのターゲットはスタート時のエレメントがend | cancelまで維持される
+*/
+function handleTouch(evt){
+	putsCONS(evt.type+' : '+evt.target.id);
+	switch(evt.type){
+	case 'touchstart':
+	case 'touchmove':
+		touchFocus = evt.target;
+	break;
+	case 'touchend':
+	case 'touchcancel':
+		touchFocus = null;
+	break;
+	default:
+	};
 }
 
 function nas_Action_Startup() {
@@ -1990,7 +2112,7 @@ return;	}
 	})
 	document.getElementById("sTatus").innerHTML= "startup";
 //
-	document.addEventListener('touchmove', handleTouchMove, { passive: false });
+//	document.addEventListener('touchmove', handleTouchMove, { passive: false });
 	
 	//フォーム上のカスタム変数を読み取る
 	pastrate = RATE; 	//新レートを設定する前に元のレートを退避
@@ -2008,11 +2130,24 @@ return;	}
 	
 	 if(SPFS){changeSPFB();};//一回実行しておく?
 //ボタン類のイベントハンドラを設定
-	Array.from(document.getElementsByClassName('numButton')).forEach(e =>{
-		e.addEventListener('pointerenter',handlePointer);
-		e.addEventListener('pointerleave', handlePointer);
-		e.addEventListener('pointerout', handlePointer);
-	});
+
+	Array.from(document.getElementsByClassName('calcKey')).forEach(e =>{
+		e.addEventListener('pointerdown',  handlePointer, { passive: false });
+		e.addEventListener('pointerup',    handlePointer, { passive: false });
+//		e.addEventListener('pointermove',  handlePointer, { passive: false });
+		e.addEventListener('pointerenter', handlePointer, { passive: false });
+//		e.addEventListener('pointerover',  handlePointer, { passive: false });
+		e.addEventListener('pointerleave', handlePointer, { passive: false });
+		e.addEventListener('pointerout',   handlePointer, { passive: false });
+		e.addEventListener('pointercancel',handlePointer, { passive: false });
+	});// */
+
+	Array.from(document.getElementsByClassName('calcKey')).forEach(e =>{
+		e.addEventListener('touchstart'    ,handleTouch);
+		e.addEventListener('touchmove'  ,handleTouch);
+		e.addEventListener('touchend'     ,handleTouch);
+		e.addEventListener('touchcancel',handleTouch);
+	});// */
 //リサイズイベント
 	window.addEventListener('resize',nas_fitToWindow);
 //	再初期化終了・動作開始
