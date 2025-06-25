@@ -1438,10 +1438,12 @@ previewButton=button;
 		"×":"*",
 		"✕":"*",
 		"div":"/",
+		"÷":"/",
 		"pow":"^",
 		"minus":"-",
 		"−":"-",
 		"plus":"+",
+		"＋":"+",
 		"MR":"MEM",
 		"DUP":"dup",
 		"POP":"pop",
@@ -1451,12 +1453,11 @@ previewButton=button;
 		"±":"T",
 		"√":"R",
 		"π":"P",
-		"%":"MOD",
-		"":""
+		"%":"MOD"
 	};
 function normalizeCommand(com){
 	if(commandAliases[com]) return commandAliases[com];
-	return com;
+	return String(com).normalize('NFKC');
 }
 /*
 	保留オペレータの解決
@@ -2027,14 +2028,12 @@ function handlePointer(evt){
 	evt.stopImmediatePropagation();
 	evt.stopPropagation();
 	evt.preventDefault();
-	putsCONS(evt.type+' : '+evt.target.id);
 	evt.preventDefault();
 
 	switch(evt.type){
 	case 'pointerdown':
 		if(pointerFocus !== evt.target ){
 			pointerFocus = evt.target;
-putsCONS(pointerFocus.id);
 			pointerFocus.classList.remove('button-hover');
 			pointerFocus.classList.add('button-active');
 		};
@@ -2055,14 +2054,13 @@ putsCONS(pointerFocus.id);
 		evt.target.classList.remove('button-hover');
 		if(pointerFocus){
 			pointerFocus = null;
-			putsCONS('NULL');
 		};
 	break;
 	case 'pointerancel':
 	case 'pointerup':
 		if(pointerFocus === evt.target ){
-			if(pointerFocus.onclick instanceof Function){
-				if(touchFocus === pointerFocus) pointerFocus.click();
+			if(pointerFocus.value){
+				pushKey(pointerFocus.value);
 				pointerFocus.classList.remove('button-hover');
 				pointerFocus.classList.remove('button-active');
 				pointerFocus = null;
@@ -2080,7 +2078,7 @@ pointerFocus	タッチベントを受けた要素参照ポイント
 タッチイベントのターゲットはスタート時のエレメントがend | cancelまで維持される
 */
 function handleTouch(evt){
-	putsCONS(evt.type+' : '+evt.target.id);
+//	putsCONS(evt.type+' : '+evt.target.id);
 	switch(evt.type){
 	case 'touchstart':
 	case 'touchmove':

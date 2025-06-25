@@ -127,7 +127,7 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 	id="nas_Ri"
 	class="display"
 	ALT="ランニングインジケータ"
-	title="lap/reset"
+	title="running Indicator"
 	value=""
 	disabled
 ><br /
@@ -137,10 +137,11 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 	title="ストップウオッチの状態を示す"
 >satrtup</span><input	type="button"
 	id="nas_display"
-	class="display calcKey"
+	class="display"
 	title="ストップウオッチ表示部分"
 	value="00:00:00:00"
-	onMouseDown="nas_Capt('Start_Stop')"
+	onPointerDown="nas_Capt('Start_Stop')"
+	disabled
 ><br /
 ><span
 	id="COMbuf"
@@ -257,7 +258,7 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 >KBD</button><br />
 <!--
 	<button
-	class=toolKB
+	class='calcKey toolKB'
 	value="FIT"
 	id="fitting"
 	title="ウィンドウを合わせる"
@@ -278,7 +279,7 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 	onMouseDown="about_nas()"
 ><br /></button>
 	<button
-	class=toolKB
+	class='calcKey toolKB'
 	value="exp."
 	id="sbeval"
 	title="エクスプレッション"
@@ -330,60 +331,60 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 	<!-- fkbBox -->
 <div	id="fkbBox" style="display:inline;">
 <input type="button"
-	class=toolKB
+	class='calcKey toolKB'
 	id="MEM"
 	value="MR"
 	title="push memory stack data"
-	onclick="pushKey(this.value)"
+
 ><br /><input type="button"
-	class=toolKB
+	class='calcKey toolKB'
 	id="dup"
 	value="DUP"
 	title="duplicate stack data"
 	onclick="pushKey(this.id)"
 ><br /><input type="button"
-	class=toolKB
+	class='calcKey toolKB'
 	id="pop"
 	value="POP"
 	title="pop stack data"
 	onclick="pushKey(this.id)"
 ><br /><input type="button"
-	class=toolKB
+	class='calcKey toolKB'
 	id="exc"
 	title="exchange stack data"
 	value="EXC"
 	onclick="pushKey(this.id)"
 ><br /><input type="button"
-	class=toolKB
+	class='calcKey toolKB'
 	id="rtR"
 	title="rotate Right stack data"
 	value="RTR"
 	onclick="pushKey(this.id)"
 ><br /><input type="button"
-	class=toolKB
+	class='calcKey toolKB'
 	id="rtL"
 	title="rotate Left stack data"
 	value="RTL"
 	onclick="pushKey(this.id)"
 ><br /><hr />
 <input type="button"
-	class=toolKB
+	class='calcKey toolKB'
 	id="backspace"
 	value="BS"
 	title="取り消し"
-	onclick="pushKey(this.value)"
+
 ><br /><input type="button"
-	class=toolKB
+	class='calcKey toolKB'
 	id="clearentry"
 	value="CE"
 	title="バッファクリア"
-	onclick="pushKey(this.value)"
+
 ><br /><input type="button"
-	class=toolKB
+	class='calcKey toolKB'
 	id="allclear"
 	title="スタッククリア"
 	value="AC"
-	onclick="pushKey(this.value)"
+
 ><br />
 </div>
 	<!-- fkbBox// -->
@@ -436,25 +437,25 @@ class='calcKey numButton numButtonDark'
 id="OP1"
 value="±"
 title="flipValue"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 	class='calcKey numButton numButtonDark'
 	id="OP2"
 	value="π"
 	title="PI"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 		class='calcKey numButton numButtonDark'
 		id="OP3"
 		value="√"
 		title="sqrt"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 			class='calcKey numButton numButtonDark'
 			id="OP4"
 			value="%"
 			title="mod"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 				class='calcKey numButton numButtonL'
 				id="SPF2"
@@ -479,13 +480,13 @@ onclick="pushValue(getTC());"
 		id="OP7"
 		value="＾"
 		title="power"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 			class='calcKey numButton numButtonDark'
 			id="OP8"
 			value="÷"
 			title="div"
-			onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 				class='calcKey numButton numButtonL'
 				id="SPF3"
@@ -497,26 +498,26 @@ class='calcKey numButton numButtonLight'
 id="d"
 value="d"
 title="d"
-onclick="pushKey(this.value)"
+
 disabled=true
 ></td><td><input type="button"
 	class='calcKey numButton numButtonLight'
 	id="e"
 	value="e"
 	title="e"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 		class='calcKey numButton numButtonLight'
 		id="f"
 		value="f"
 		title="f"
-		onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 			class='calcKey numButton numButtonDark'
 			id="OP5"
 			value="×"
 			title="mul"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 				class='calcKey numButton numButtonL'
 				id="SPF4"
@@ -528,25 +529,25 @@ class='calcKey numButton numButtonLight'
 id="a"
 value="a"
 title="a"
-onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 	class='calcKey numButton numButtonLight'
 	id="b"
 	value="b"
 	title="b"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 		class='calcKey numButton numButtonLight'
 		id="c"
 		value="c"
 		title="c"
-		onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 			class='calcKey numButton numButtonDark'
 			id="OP6"
-			value="－"
+			value="−"
 			title="minus"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 				class='calcKey numButton numButtonL'
 				id="SPF5"
@@ -558,25 +559,25 @@ class='calcKey numButton'
 id="7"
 value="7"
 title="7"
-onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 	class='calcKey numButton'
 	id="8"
 	value="8"
 	title="8"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 		class='calcKey numButton'
 		id="9"
 		value="9"
 		title="9"
-		onclick="pushKey(this.value)"
+
 ></td><td rowspan=2><input type="button"
 			class='calcKey numButton numButtonDark numButtonT'
 			id="OP7"
 			value="＋"
 			title="plus"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 				class='calcKey numButton numButtonL'
 				id="SPF6"
@@ -588,19 +589,19 @@ class='calcKey numButton'
 id="4"
 value="4"
 title="4"
-onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 	class='calcKey numButton'
 	id="5"
 	value="5"
 	title="5"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 		class='calcKey numButton'
 		id="6"
 		value="6"
 		title="6"
-		onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 				class='calcKey numButton numButtonL'
 				id="SPF7"
@@ -612,25 +613,25 @@ class='calcKey numButton'
 id="1"
 value="1"
 title="1"
-onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 	class='calcKey numButton'
 	id="2"
 	value="2"
 	title="2"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 		class='calcKey numButton'
 		id="3"
 		value="3"
 		title="3"
-		onclick="pushKey(this.value)"
+
 ></td><td rowspan=2><input type="button"
 			class='calcKey numButton numButtonDark numButtonT'
 			id="OP8"
 			value="＝"
 			title="equal"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 				class='calcKey numButton numButtonL'
 				id="SPF8"
@@ -642,19 +643,19 @@ class='calcKey numButton'
 id="zero"
 value="0"
 title="zero"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 	class='calcKey numButton'
 	id="zz"
 	value="00"
 	title="zerozero"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 		class='calcKey numButton'
 		id="dot"
 		value=". "
 		title="dot"
-	onclick="pushKey(this.value)"
+
 ></td><td><input type="button"
 				class='calcKey numButton numButtonL'
 				id="SPF9"
