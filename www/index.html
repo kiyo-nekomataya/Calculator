@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+﻿<!DOCTYPE HTML>
 <html>
 <head>
     <title></title>
@@ -215,31 +215,31 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 	class=funcKB
 	id="Q"
 	value="Q"
-	onclick="qpimp(operandStack.top(),'Q');return false;"
+	onclick="qpimp(operandStack.top(),this.value);return false;"
 	title = "[Q]"
 >Q</button><br /><button
 	class=funcKB
 	id="point"
 	value="pt"
-	onclick="qpimp(operandStack.top(),'pt');return false;"
+	onclick="qpimp(operandStack.top(),this.value);return false;"
 	title = "[P]"
 >pt</button><br /><button
 	class=funcKB
 	id="inch"
 	value="in"
-	onclick="qpimp(operandStack.top(),'in');return false;"
+	onclick="qpimp(operandStack.top(),this.value);return false;"
 	title = "[I]"
 >in</button><br /><button
 	class=funcKB
 	id="mm"
 	value="mm"
-	onclick="qpimp(operandStack.top(),'mm');return false;"
+	onclick="qpimp(operandStack.top(),this.value);return false;"
 	title = "[M]"
 >mm</button><br /><button
 	class=funcKB
 	id="pixel"
 	value="px"
-	onclick="qpimp(operandStack.top(),this.id);return false;"
+	onclick="qpimp(operandStack.top(),this.value);return false;"
 	title = "[p]"
 >px</button><br /><hr />
 <button
