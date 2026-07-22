@@ -2,6 +2,8 @@
     "name": "multifunction calculator",
     "short_name": "nasCalc",
     "description": "多機能計算機",
+    "manifest_version":3,
+    "version":"1.0.1",
     "icons": [
         {
             "src": "images/icons/icon-48x48.png",
