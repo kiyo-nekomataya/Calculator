@@ -1,8 +1,7 @@
-/*
+﻿/*
  *	nasCalc.js
  *		アニメーション作業用電卓スクリプト部分
  */
-
 /*
 ねこまたや の電卓
  電卓
@@ -342,6 +341,28 @@ return [agentFlag,uaName,uaVer];
 	たしかにUAによる判別は意味がない…必要なオブジェクトを確認する方が1024倍くらいマシなので
 	そのうちこれは削除しようっと …今回はとりあえずメモしといて手をつけない(2008・12)
 */
+//汎用のクリップボードテキスト書込
+sendText2Clipboard = async function sendText2Clipboard(contentText){
+	if(contentText){
+//クリップボード転送
+		try {
+			var res = await navigator.clipboard.writeText(contentText);
+			if (res){
+				console.log(res);
+				console.log('クリップボードに転送しました(新)')
+			};
+		}catch(err){
+			console.log(err);
+//クリップボード転送 (旧コード)
+			var i = document.body.appendChild(document.createElement('textarea'));
+			i.value = contentText;
+			i.select();
+			document.execCommand("Copy");
+			document.body.removeChild(i);
+			console.log('クリップボードに転送しました(旧)');
+		}
+	};
+}
 /*
 game.gr.jp のライブラリ
 */
@@ -361,96 +382,13 @@ game.gr.jp のライブラリ
 
  Support http://game.gr.jp/js/
 =======================================================*/
+//--押されたキーコードを返す
+function getKEYCODE(e){ return (e.keyCode!=0)?e.keyCode:e.charCode; }
+//--キーeventをセットする
 
-  //--ブラウザを調べてNNとIEの分岐を微調整します
-  MSIE = navigator.userAgent.indexOf("MSIE")!=-1;
-
-  //--押されたキーコードを返す
-function getKEYCODE(e){  
-
-      if(document.all)           return  event.keyCode
-      else if(document.getElementById) 
-            return (e.keyCode!=0)?e.keyCode:e.charCode
-      else if(document.layers)   return  e.which
-  }
-//--修飾キーのための処理
-//イベントを渡して CTRL/ALT/SHIFT 各キーの状態をチェック
-function chkCtrl(e){ 
-
-      if(document.getElementById && !MSIE )  
-                                  return  e.ctrlKey
-      else if(document.all)       return  event.ctrlKey
-      else if(document.layers){
-        var ctl=e.modifiers
-        if( ctl==2 || ctl==3 || ctl==6 || ctl==7 ) 
-             return  true
-        else return  false
-      }
-}
-
-function chkAlt(e){ 
-
-      if(document.getElementById && !MSIE )  
-                                  return  e.altKey
-      else if(document.all)       return  event.altKey
-      else if(document.layers){
-        var ctl=e.modifiers
-        if( ctl==1 || ctl==3 || ctl==5 || ctl==7 ) 
-             return  true
-        else return  false
-      }
-}
-
-function chkShift(e){ 
-
-      if(document.getElementById && !MSIE )  
-                                  return  e.shiftKey
-      else if(document.all)       return  event.shiftKey
-      else if(document.layers){
-        var ctl=e.modifiers
-        if(  ctl==4 || ctl==5 || ctl==6 || ctl==7 ) 
-             return  true
-        else return  false
-      }
-}
-
-/*///////////////////////////// HTML出力用関数   UseFree
-========================================================
- Win  n4 n6 moz e4 e5 e6,
- Mac  n4 n6 moz e4.5 e5,
- Linux n4 n6 moz         
-========================================================
-  使用例
-  outputLAYER('レイヤー名',出力するHTML) 
-
- Support http://game.gr.jp/js/
-=======================================================*/
-
- function outputLAYER(layName,html){
-
-    if(document.getElementById){       //N6,Moz,IE5,IE6用
-      document.getElementById(layName).innerHTML=html
-
-    } else if(document.all){                      //IE4用
-      document.all(layName).innerHTML=html
-
-    } else if(document.layers) {                  //NN4用
-       with(document.layers[layName].document){
-         open()
-         write(html)
-         close()
-      }
-    }
-
-  }
-
-/*///////////////////////////// HTML出力用関数ここまで */
-
-  //--キーeventをセットする
-
-  document.onkeydown  = nas_InputD ;
-  document.onkeypress = nas_InputP ;
-  document.onkeyup    = nas_InputU ;
+	document.addEventListener('keydown' ,nas_InputD);
+	document.addEventListener('keypress',nas_InputP);
+	document.addEventListener('keyup'   ,nas_InputU);
 //  if(document.layers)
 //               document.captureEvents(Event.KEYPRESS)
   self.focus()
@@ -981,17 +919,14 @@ case "run\-lap":
 function nas_InputD(e) {
 //キーダウンをキャプチャ
 //何はなくとも現在時を保持
-ClockClicks = new Date();ct_K = ClockClicks.getTime();nas_capt = "Key";
-//putsCONS(getKEYCODE(e)+' /:Dn /');
-//putsCONS(nas_cc2FR(ct_K)+"_");
+	ClockClicks = new Date();ct_K = ClockClicks.getTime();nas_capt = "Key";
+	var key = getKEYCODE(e);//キーコードを取得
 	if ( KeyMODE == 'calculator' ){
 //電卓モード
-		var key = getKEYCODE(e);//キーコードを取得
 		focusKey(String.fromCharCode(key));
 		return true;
 	} else {
 //タイマーモード
-	var key = getKEYCODE(e);//キーコードを取得
 	switch(key) {
 case 13 :       nas_Lap_Reset(); break;//enter
 //case 27 :       nas_Clear_LAP(); break;//esc
@@ -1015,12 +950,10 @@ return false;
 
 function nas_InputP(e) {
 //何はなくとも現在時を保持
-ClockClicks = new Date();ct_K = ClockClicks.getTime();nas_capt = "Key";
-//putsCONS(getKEYCODE(e)+'/ press /'+String.fromCharCode(getKEYCODE(e)));
-//putsCONS(nas_cc2FR(ct_K));
+	ClockClicks = new Date();ct_K = ClockClicks.getTime();nas_capt = "Key";
+	var key = getKEYCODE(e);//キーコードを取得
 	if (key_off) return true;
 //イベントを受け取る仕様に変更
-	var key = getKEYCODE(e);//キーコードを取得
 	if ( KeyMODE == 'calculator' ) {
 //putsCONS(key + ';' )
 //if (! document.getElementById("SIbuf").focus()) return true;
@@ -1525,6 +1458,13 @@ if (INPUTmode=="fct") {
 	document.getElementById("INbuf").innerHTML = inBuf;
 	document.getElementById("SIbuf").value = '';
 }
+//入力バッファ更新のタイミングで入力バッファの値をクリップボードに転送する
+	sendText2Clipboard(document.getElementById("INbuf").innerText);
+/*	try {
+		navigator.clipboard.writeText(document.getElementById("INbuf").innerText);
+	}catch (err){
+		alert(err)
+	}// */
 //alert(Nm);
 putsStack();//デバッグ用 というか、ベンリなのでそのまま使う
 }
@@ -1534,7 +1474,6 @@ putsStack();//デバッグ用 というか、ベンリなのでそのまま使�
 function SW(ComInput) {
 if (dEbug) nas_Push_Log(ComInput + '\t>>');
 //オペレータを受信した場合は
-
 switch (ComInput) {
 //くり返し可能二項演算子の場合
 //case		"++":	//くり返し加算
@@ -1549,7 +1488,6 @@ case		"^"  ://ベキ乗
 case		"-"  ://減算
 case		"+"  ://加算
 //以前の二項演算子を解決
-//	if (! comBuf=='') {SW("=");};
 	switch(OPf){
 	case 2:
 		if (comBuf==ComInput){
@@ -1810,46 +1748,41 @@ var rimPlace=10000;
 	switch (uNit){
 	case	'Q':
 RESULT=
-vAlue+'Q:\n'+
-' ='+vAlue+' Q\n'+
-' ='+Math.round((((0.25 * vAlue) / 25.40)*72)*rimPlace)/rimPlace+' pt\n'+
-' ='+Math.round(((0.25 * vAlue) / 25.40)*rimPlace)/rimPlace+' in\n'+
-' ='+Math.round((0.25 * vAlue)*rimPlace)/rimPlace+' mm\n'+
-' ='+Math.round(((0.25 * vAlue) * nas.Dpc() / 10)*rimPlace)/rimPlace+' px/'+nas.Dpi()+'dpi';
+vAlue+'Q :\n'+
+' = '+Math.round((((0.25 * vAlue) / 25.40)*72)*rimPlace)/rimPlace+' pt\n'+
+' = '+Math.round(((0.25 * vAlue) / 25.40)*rimPlace)/rimPlace+' in\n'+
+' = '+Math.round((0.25 * vAlue)*rimPlace)/rimPlace+' mm\n'+
+' = '+Math.round(((0.25 * vAlue) * nas.Dpc() / 10)*rimPlace)/rimPlace+' px/'+nas.Dpi()+'ppi';
 		;break;
 	case	'pt':
-RESULT=vAlue + 'pt:\n'+
-' ='+Math.round( (((vAlue / 72) * 25.40) * 4)*rimPlace)/rimPlace +' Q\n'+
-' ='+Math.round( vAlue*rimPlace)/rimPlace + ' pt\n'+
-' ='+Math.round( (vAlue / 72)*rimPlace)/rimPlace+' in\n'+
-' ='+Math.round( ((vAlue / 72) * 25.40)*rimPlace)/rimPlace+' mm\n'+
-' ='+Math.round( ((vAlue / 72) * nas.Dpi() )*rimPlace)/rimPlace+' px/'+nas.Dpi()+'dpi';
+RESULT=vAlue + 'pt :\n'+
+' = '+Math.round( (((vAlue / 72) * 25.40) * 4)*rimPlace)/rimPlace +' Q\n'+
+' = '+Math.round( (vAlue / 72)*rimPlace)/rimPlace+' in\n'+
+' = '+Math.round( ((vAlue / 72) * 25.40)*rimPlace)/rimPlace+' mm\n'+
+' = '+Math.round( ((vAlue / 72) * nas.Dpi() )*rimPlace)/rimPlace+' px/'+nas.Dpi()+'ppi';
 		;break;
 	case	'in':
-RESULT=vAlue + 'in:\n'+
-' ='+Math.round( (vAlue * 25.40 * 4)*rimPlace)/rimPlace+' Q\n'+
-' ='+Math.round( (vAlue * 72)*rimPlace)/rimPlace+' pt\n'+
-' ='+Math.round( vAlue*rimPlace)/rimPlace + ' in\n'+
-' ='+Math.round( (vAlue * 25.40*rimPlace)/rimPlace)+' mm\n'+
-' ='+Math.round( (vAlue * nas.Dpi())*rimPlace)/rimPlace+' px/'+nas.Dpi()+'dpi';
+RESULT=vAlue + 'in :\n'+
+' = '+Math.round( (vAlue * 25.40 * 4)*rimPlace)/rimPlace+' Q\n'+
+' = '+Math.round( (vAlue * 72)*rimPlace)/rimPlace+' pt\n'+
+' = '+Math.round( (vAlue * 25.40*rimPlace)/rimPlace)+' mm\n'+
+' = '+Math.round( (vAlue * nas.Dpi())*rimPlace)/rimPlace+' px/'+nas.Dpi()+'ppi';
 		;break;
 	case	'mm':
 RESULT=
-vAlue+'mm:\n'+
-' ='+Math.round((vAlue * 4)*rimPlace)/rimPlace+' Q\n'+
-' ='+Math.round( ((vAlue / 25.40) * 72)*rimPlace)/rimPlace+' pt\n'+
-' ='+Math.round( (vAlue / 25.40)*rimPlace)/rimPlace+ ' in\n'+
-' ='+Math.round( vAlue*rimPlace)/rimPlace + ' mm\n'+
-' ='+Math.round( (vAlue * nas.Dpc() / 10)*rimPlace)/rimPlace+' px/'+nas.Dpi()+'dpi';
+vAlue+'mm :\n'+
+' = '+Math.round((vAlue * 4)*rimPlace)/rimPlace+' Q\n'+
+' = '+Math.round( ((vAlue / 25.40) * 72)*rimPlace)/rimPlace+' pt\n'+
+' = '+Math.round( (vAlue / 25.40)*rimPlace)/rimPlace+ ' in\n'+
+' = '+Math.round( (vAlue * nas.Dpc() / 10)*rimPlace)/rimPlace+' px/'+nas.Dpi()+'ppi';
 		;break;
 	case	'px':
 RESULT=
-vAlue + 'px/'+nas.Dpi()+' dpi:\n'+
-' ='+Math.round( (vAlue / nas.Dpc() * 10) * 4 *rimPlace)/rimPlace+' Q\n'+
-' ='+Math.round((((vAlue / nas.Dpc() * 10) / 25.40) * 72)*rimPlace)/rimPlace+' pt\n'+
-' ='+Math.round( ((vAlue / nas.Dpc() * 10) / 25.40)*rimPlace)/rimPlace+' in\n'+
-' ='+Math.round((vAlue / nas.Dpc() * 10)*rimPlace)/rimPlace+' mm\n'+
-' ='+Math.round( vAlue*rimPlace)/rimPlace+' px/'+nas.Dpi()+'dpi';
+vAlue + 'px/'+nas.Dpi()+' ppi :\n'+
+' = '+Math.round( (vAlue / nas.Dpc() * 10) * 4 *rimPlace)/rimPlace+' Q\n'+
+' = '+Math.round((((vAlue / nas.Dpc() * 10) / 25.40) * 72)*rimPlace)/rimPlace+' pt\n'+
+' = '+Math.round( ((vAlue / nas.Dpc() * 10) / 25.40)*rimPlace)/rimPlace+' in\n'+
+' = '+Math.round((vAlue / nas.Dpc() * 10)*rimPlace)/rimPlace+' mm\n';
 		;break;
 	}
 	putsCONS("",'left');
@@ -1860,48 +1793,7 @@ vAlue + 'px/'+nas.Dpi()+' dpi:\n'+
 UI関連処理
 */
 //データ初期化
-//
-if(false){
-//コンソール表示のひかえをドキュメントから取得
-UIdata["console00"] = document.getElementById("tooPanel").innerHTML;
-
-//
-UIdata["toolBox00"] = '	<!-- ツールボックスパネル hide-->'+
-'<input	type=hidden'+
-'	value="cons"'+
-'	id="Pn1"'+
-'	><br />'+
-'<input	type=hidden'+
-'	value="kbd"'+
-'	id="Pn2"'+
-'	><br />'+
-'<input	type=hidden'+
-'	value="kbd2"'+
-'	id="Pn3"'+
-'	><br />'+
-'	<!-- ツールボックスパネル hidden-->';
-//
-UIdata["toolBox01"] = document.getElementById("tooPanel").innerHTML;
-
-//
-UIdata["mdp00"]=document.getElementById("mdpBox").innerHTML;
-//
-UIdata["fkb00"]='	<!-- ファンクションキーボード hide-->'+
-'<input type="hidden" value="dec">'+
-'	<!-- ファンクションキーボード -->';
-//
-UIdata["fkb01"]=document.getElementById("fkbBox").innerHTML;
-//
-UIdata["nkb00"]='	<!-- 数値キーボード hide-->';
-//
-//
-UIdata["nkb01"]=document.getElementById("nkbBox").innerHTML;
-
-//
-}
-
 //サブウィンドウのフリップ
-
 
 function kb_Flip(aRgs) {
 	switch(aRgs){
@@ -1930,14 +1822,9 @@ default	:	alert(aRgs);
 		if(document.getElementById('fkbBox').style.display=="none"){
 		};
 	};
-
-//	if (autoFit) nas_fitToWindow();
-//		setTimeout("nas_fitToWindow();",50);
-
 return false;
 }
 /*内寸取得*/
-
 
 function getWindowinnerSize() {
     if (typeof innerWidth != 'undefined') {           // CSSOM, Fx, Opera, Safari, NN3-4
@@ -1992,20 +1879,9 @@ baseFieldのサイズを取得してWindowをフィットさせる
 条件によりこの関数は働かないことが多いので廃止予定
 */
 function nas_sizeToContent(){
-//	if(! window.opener) return false;
-//	if(! autoFit){return;}else{}
 		var form = (document.getElementById('fkbBox').style.display=="none")? "box":((window.innerWidth/window.innerHeight >= 1)?
 		"landscape":"portrate");//box|portrate|landscape
 		return form;
-//横サイズ
-		var innerWidth = document.getElementById('baseField').getBoundingClientRect().width;
-//縦サイズ
-		var innerHeight = document.getElementById('baseField').getBoundingClientRect().height;
-		var winLib=getWindowlibSize();
-		var WinW = innerWidth  + winLib[0];
-		var WinH = innerHeight + winLib[1];
-		window.resizeTo(WinW,WinH);
-	return [WinW,WinH];
 }
 /*
 ストップウオッチフォームが読み込まれた直後に呼び出されて、
@@ -2017,9 +1893,7 @@ function nas_sizeToContent(){
 function handleTouchMove(evt){
 	if(evt.target instanceof HTMLInputElement){
 		console.log(evt);
-//		if(evt.type == 'touchen)evt.target.classList.add()
 	}
-//	if(evt.target.id !='CONS') evt.preventDefault();
 };
 /*
 	ボタン類のイベントハンドル

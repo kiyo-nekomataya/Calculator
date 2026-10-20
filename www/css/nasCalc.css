@@ -1,9 +1,9 @@
-/*ìdëÏÇÃâ¸èCÅ@2025 ÉXÉ}Å[ÉgÉtÉHÉììôÇÃÉ^ÉbÉ`í[ññóp
-	ècå^ÇPñ  80x160mm
-	â°å^ÇPñ  160x80mm
-	Ç…ÉfÉUÉCÉìïœçX
-	íPà Çé¿êîånÇ…ïœçX(96ppiä∑éZÇ≈)
+Ôªø/*ÊîπÂÆöcss 2026 10
+	portlate 80x160mm
+	lancscape 160x80mm
+	WEBÂü∫Ê∫ñËß£ÂÉèÂ∫¶(96ppi)
 	
+	„ÉÄ„Éº„ÇØ„Çπ„Ç≠„Éº„É†Ë®≠ÂÆö
 */
 html {
 	touch-action: manipulation;
@@ -15,8 +15,8 @@ body {
 	padding:0;
 	height:100%;
 	text-align:center;
-	color:#444444;
-	background:#eeeeee;
+	color:#444;
+	background:#eee;
 	-moz-user-select:none;
 	-webkit-user-select:none;
 	-ms-user-select:none;
@@ -25,11 +25,30 @@ body {
   justify-items: center;
   align-content: center
 	}
+
+@media (prefers-color-scheme: dark) {
+	body{
+		color:#eee;
+		background:#535353;
+	}
+}
 input {font-size:9pt;border:1pt;}
+
+/*========== „É™„É≥„ÇØË¶ÅÁ¥† ============*/
 A:link    {color:#0000C0;text-decoration:none;}
 A:visited {color:#8000D0;text-decoration:none;}
 A:active  {color:blue;text-decoration:none;}
 A:hover  {color:#000080;background-color:#fafad2;}
+@media (prefers-color-scheme: dark) {
+
+/*========== „É™„É≥„ÇØ(„ÉÄ„Éº„ÇØËÉåÊôØ) ============*/
+    a:link         {color:#dddddd}
+    a:visited      {color:#eeffee}
+    a:hover        {color:#ff4444;background-color:snow}
+    a:active       {color:gray;background-color:snow}
+    a:focus        {color:#ee4444;background-color:snow}
+}
+
 input {border-style:none;border-width:0;}
 input.button {background-color:transparent;}
 input:active {border-style:none;}
@@ -62,6 +81,7 @@ button{
 	margin  :1px  ;
 	width   :119px;
 	height  :27px ;
+	background-color:#bbb;
 }
 .wideswitch:hover {
 	border-style:solid;
@@ -89,13 +109,13 @@ button{
 #displayField {
 	position:relative;
 	display: inline-block;
-	background-color:#eeeeee;
+	background-color:transparent;
 	width:80mm;
 	height:80mm;
 }
 #kbdField {
 	display:inline-block;
-	background-color:#eeeeee;
+	background-color:transparent;
 	position:relative;
 	width:80mm;
 	height:80mm;
@@ -114,21 +134,23 @@ button{
 }
 #consoleBox	{
 	background-color:transparent;
-	color:#88bb88;
+	color:#55aa55;
 	position:absolute;
 	font-family:times;
 	font-size:14px;
 	border-style:none;
 	top:30mm;
-	width:60mm;
+	width:58mm;
 	height:30mm;
 	text-align:left;
+	resize:none;
 }
 .display	{
 	text-align:center;
 	position:absolute;
 	font-family:times;
-	color:#88bb88;
+	color:#55aa55;
+	background-color:transparent;
 }
 .stacdisplay	{
 		position:absolute;
@@ -137,10 +159,11 @@ button{
 	border-style:none;
 	padding-left  :2mm;
 	padding-right :2mm;
-	color:#88bb88;
+	color:#55aa55;
 	background-color:transparent;
 	font-family:times;
-	font-size:4mm;
+	font-size:5mm;
+	resize:none;
 }
 #CHG	{
 	position:absolute;
@@ -158,7 +181,7 @@ button{
 }
 #CHG_swMODE	{
 	position:absolute;
-	font-size:12px;
+	font-size:14px;
 	font-weight:900;
 	top:2px;
 	left:54px;
@@ -166,7 +189,7 @@ button{
 	height:16px;
 }
 #nas_RATE	{
-	font-size:12px;
+	font-size:14px;
 	font-weight:900;
 	top:2px;
 	left:96px;
@@ -176,7 +199,7 @@ button{
 
 #Resolution	{
 	position:absolute;
-	font-size:12px;
+	font-size:14px;
 	font-weight:900;
 	top:2px;
 	left:150px;
@@ -185,7 +208,7 @@ button{
 }
 #inputMode	{
 	position:absolute;
-	font-size:12px;
+	font-size:14px;
 	font-weight:900;
 	top:2px;
 	left:202px;
@@ -194,7 +217,7 @@ button{
 }
 #nas_Ri	{
 	vertical-align:top;
-	font-size:9pt;
+	font-size:10pt;
 	top:16px;
 	left:16px;
 	border-style:none;
@@ -203,14 +226,13 @@ button{
 	height:16px;
 }
 #sTatus	{
+	font-size: 15px;
 	top:36px;
 	left:0px;
-	width:36px;
-	height:24px;
 }
 #nas_display	{
 	position:absolute;
-	font-size:18px;
+	font-size:20px;
 	left:54px;
 	top:32px;
 	border-style:none;
@@ -220,7 +242,7 @@ button{
 }
 #COMbuf		{
 	position:absolute;
-	font-size:16px;
+	font-size:20px;
 	left:8px;
 	top:64px;
 	width:24px;
@@ -228,11 +250,11 @@ button{
 }
 #INbuf	{
 	position:absolute;
-	font-size:24px;
+	font-size:28px;
 	text-align:right;
-	left:48px;
+	left:32px;
 	top:60px;
-	width:144px;
+	width:180px;
 	height:26px;
 	-moz-user-select:text;
 	-webkit-user-select:text;
@@ -356,7 +378,8 @@ button{
 }
 .funcKB	{
 	width:52px;
-	height:30px
+	height:30px;
+	background-color:#ddd;
 }
 .funcKB:hover	{
 	border-style:solid;
@@ -374,7 +397,7 @@ button{
 	width:152px;
 	height:20px
 }
-/*	ÉZÉåÉNÉ^	*/
+/*	ÔøΩZÔøΩÔøΩÔøΩNÔøΩ^	*/
 .iSelect	{
 	margin:0;
 	padding:0;

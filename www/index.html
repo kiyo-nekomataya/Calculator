@@ -89,14 +89,14 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 <img src="./images/01.png"
 	id="CHG"
 	class="display"
-	ALT="キーボードモード切り換え"
-	title="キーボードモード切り換え"
+	ALT="キーボードモード切替"
+	title="キーボードモード切替"
 	onMouseDown = "nas_ChangeKBD()"
 /><img src="./images/05.png"
 	id="CHG_clock"
 	class="display"
-	alt="時刻表示切り換え"
-	title="時刻表示切り換え"
+	alt="時刻表示"
+	title="時刻表示切替"
 	onMouseDown = "nas_ChangeMODE()"
 /><span
 	id="CHG_swMODE"
@@ -109,7 +109,7 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 	class="display"
 //	value="24FPS"
 	onclick = "nas_ChangeRATE('next')"
-	title="フレームレート切り換え"
+	title="フレームレート切替"
 >24FPS</span> <span
  <span
 	id="Resolution"
@@ -122,7 +122,7 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 	class="display"
 	value="10"
 	onclick="chgINPUTmode('next')"
-	title="電卓の入力モードを切り換え"
+	title="電卓の入力モード切替"
 ></span><input type="button"
 	id="nas_Ri"
 	class="display"
@@ -246,14 +246,14 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 	class=funcKB
 	value="<->"
 	id="cons_bt"
-	title="コンソール"
+	title="コンソール切替"
 	onclick="return kb_Flip('cons')"
-	>cls</button><br />
+	>CON</button><br />
 <button
 	class=funcKB
 	value="KBD"
 	id="kbd_bt"
-	title="キーボード切り換え"
+	title="キーボード切替"
 	onclick="return kb_Flip('kbd');"
 >KBD</button><br />
 <!--
@@ -301,8 +301,8 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 ><input type=button
 	id="LapButton"
 	class='wideswitch'
-	title="ラップ・リセット"
-	value='Lap / Reset'
+	title="スピリット・リセット"
+	value='Split / Reset'
 	onMouseDown="nas_Capt('Lap_Reset')"
 	onClick = 'return false'
 >
@@ -395,9 +395,9 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 <tbody><tr><td colspan=2><input type="button"
 		class='calcKey numButton numButtonW'
 		id="PF1"
-		value="auto"
-		title="function"
-		onclick="setRotation()"
+		value="?"
+		title="help"
+		onclick="window.open('./help/calc_sw_help.html','help')"
 ></td><td colspan=2><input type="button"
 		class='calcKey numButton numButtonW'
 		id="PF2"
@@ -673,7 +673,7 @@ title="zero"
 </form>
 
 <hr>
-Nekomataya/2025
+Nekomataya/2026
 	</div>
 
 <!--
@@ -755,6 +755,11 @@ Electron対応作業
 css調整
 2025
 キーアサイン調整　スタックの表示を10進固定から入力モード一致に変更
+
+2026
+UI調整　小さなフレームに対応　カラー微調整
+ヘルプページへのリンクを作成
+ヘルプを更新
 </textarea>
 -->
 </body>
