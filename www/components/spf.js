@@ -80,7 +80,8 @@ SPFS[5]=[
 ,	["Stop","Stop",function(){pushValue(Stop);}]
 ,	["000","000",function(){editBuf('000');}]
 ,	["CHECK","check",function(){pushKey('check');}]
-,	["orientation","Orientation",function(){alert("VVVx");}]
+,	["Rot","Rotation",function(){setRotation();}]
+,	["copy","copy",function(){copyValue();}]
 ];
 SPFS[5].name="Debug";
 /*

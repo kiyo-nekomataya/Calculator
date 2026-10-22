@@ -151,16 +151,18 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 //	value=""
 //	onFocus="key_off=1;"
 //	onBlur="key_off=0;"
-></span><span
+></span><input
+	type="text"
 	id="INbuf"
 	class="display"
 	title="mainDisplay"
 	size="16"
-//	value="0"
+	value="0"
+	disabled
 	onFocus="key_off=1;"
 	onBlur="key_off=0;"
-	onChange="checkINbuf();"
->0</span><br /
+//	onChange="checkINbuf();"
+><br /
 ><input type="text"
 	id="SIbuf"
 	class="display"
@@ -176,14 +178,18 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 <div	id=consoleBox >
 <!--	style="position:absolute;top:16px;left:320px;border-style:inset;display:inline;" -->
 	<!-- コンソール表示 -->
-<!--
 <textarea
-	id="RESULT"
-	class='stacdisplay'
-	style="text-align:right;"
-	disabled
-></textarea>-->
-<textarea
+	id="KEYbuf"
+	rows="6" cols="10"
+	style="
+		width:240px;
+		height:0px;
+		overflow:hidden;
+		resize:none;
+		padding:0;
+		opacity:0;
+	"
+></textarea><br /><textarea
 	id="CONS"
 	class='stacdisplay'
 	disabled
@@ -256,6 +262,13 @@ onContextMenu	= "if (KeyMODE == 'stopwatch') return false"
 	title="キーボード切替"
 	onclick="return kb_Flip('kbd');"
 >KBD</button><br />
+<button
+	class=funcKB
+	value="CPY"
+	id="cpy_bt"
+	title="クリップボードへコピー"
+	onclick="return copyValue();"
+>copy</button><br />
 <!--
 	<button
 	class='calcKey toolKB'

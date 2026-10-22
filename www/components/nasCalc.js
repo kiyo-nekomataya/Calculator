@@ -341,27 +341,25 @@ return [agentFlag,uaName,uaVer];
 	たしかにUAによる判別は意味がない…必要なオブジェクトを確認する方が1024倍くらいマシなので
 	そのうちこれは削除しようっと …今回はとりあえずメモしといて手をつけない(2008・12)
 */
-//汎用のクリップボードテキスト書込
-sendText2Clipboard = async function sendText2Clipboard(contentText){
-	if(contentText){
-//クリップボード転送
-		try {
-			var res = await navigator.clipboard.writeText(contentText);
-			if (res){
-				console.log(res);
-				console.log('クリップボードに転送しました(新)')
-			};
-		}catch(err){
-			console.log(err);
+//電卓専用クリップボードテキスト転送
+sendText2Clipboard = function sendText2Clipboard(contentText){
 //クリップボード転送 (旧コード)
-			var i = document.body.appendChild(document.createElement('textarea'));
+	if(contentText){
+//クリップボード転送 (旧コード)
+		var i = document.getElementById('KEYbuf')
+		if( i ){
 			i.value = contentText;
 			i.select();
 			document.execCommand("Copy");
-			document.body.removeChild(i);
 			console.log('クリップボードに転送しました(旧)');
 		}
 	};
+}
+
+function copyValue(){
+	sendText2Clipboard(document.getElementById('INbuf').value);
+
+	return false;
 }
 /*
 game.gr.jp のライブラリ
@@ -1241,7 +1239,7 @@ function checkINbuf(){
 			nas_Push_Log("INbuf check");
 //テキストエリアの内容が評価可能ならば、評価してバッファに格納して復帰
 	try {
-		var eXp=eval(document.getElementById("INbuf").innerHTML);
+		var eXp=eval(document.getElementById("INbuf").value);
 	} catch(eRR) {eXp="cannoteval";}
 		if (! isNaN(eXp)) {
 			nas_Push_Log("ok_eval");
@@ -1250,7 +1248,7 @@ function checkINbuf(){
 			inBuf=eXp.toString();
 		} else {
 //評価に失敗した場合でも、TCモードの場合はTC文字列として再評価する
-	if (document.getElementById("INbuf").innerHTML.match(/^([0-9]*):?([0-9]*):?([0-9]*)([-;\+:]?)([0-9]*)$/)) {	eXp=nas_TC2FR(document.getElementById("INbuf").innerHTML);
+	if (document.getElementById("INbuf").value.match(/^([0-9]*):?([0-9]*):?([0-9]*)([-;\+:]?)([0-9]*)$/)) {	eXp=nas_TC2FR(document.getElementById("INbuf").value);
 			nas_Push_Log("ok_TC");
 			operandStack.pop();
 			operandStack.push(eXp);
@@ -1260,7 +1258,7 @@ function checkINbuf(){
 nas_Push_Log("ng");
 }
 		}
-		document.getElementById("INbuf").innerHTML = inBuf.toString(cardinal);
+		document.getElementById("INbuf").value = inBuf.toString(cardinal);
 		pushKey("=");
 	return;
 }
@@ -1448,18 +1446,19 @@ default	:	operandStack.pop();operandStack.push(inBuf*1);//無条件入れ換え
 function updateDP(Nm){
 if (INPUTmode=="fct") {
 	if(TCf){
-		document.getElementById("INbuf").innerHTML = nas_STR2TC(inBuf)[1];
+		document.getElementById("INbuf").value = nas_STR2TC(inBuf)[1];
 		document.getElementById("SIbuf").value = '';
 	}else{
 		document.getElementById("SIbuf").value = inBuf;//保留中
 	}
 }else{
 //	alert(inBuf)
-	document.getElementById("INbuf").innerHTML = inBuf;
+	document.getElementById("INbuf").value = inBuf;
 	document.getElementById("SIbuf").value = '';
 }
-//入力バッファ更新のタイミングで入力バッファの値をクリップボードに転送する
-	sendText2Clipboard(document.getElementById("INbuf").innerText);
+//入力バッファ更新のタイミングで入力バッファの値をクリップボードに転送する システムクリップボード履歴を食い潰すので停止
+//ユーザアクションで　転送したいエリアをダブルクリックすることで転送を
+//	sendText2Clipboard(document.getElementById("INbuf").innerText);
 /*	try {
 		navigator.clipboard.writeText(document.getElementById("INbuf").innerText);
 	}catch (err){
